@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pokemon.nombre }} - Pokédex Analítica</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container pokemon-card">
+        <h1>{{ pokemon.nombre }}</h1>
+        
+        {% if pokemon.imagen %}
+            <img src="{{ pokemon.imagen }}" alt="Imagen de {{ pokemon.nombre }}" class="pokemon-img">
+        {% endif %}
+
+        <div class="pokemon-info">
+            <p><strong>Tipos:</strong> {{ pokemon.tipos | join(', ') | title }}</p>
+            <p><strong>Altura:</strong> {{ pokemon.altura }}</p>
+            <p><strong>Peso:</strong> {{ pokemon.peso }}</p>
+        </div>
+
+        {% if pokemon.es_legendario %}
+            <div class="legendario-box">
+                <p class="legendario-tag">⭐ Pokémon Legendario ⭐</p>
+                <p class="historia"><strong>Historia:</strong> {{ pokemon.historia }}</p>
+            </div>
+        {% endif %}
+
+        <h2>Estadísticas Base</h2>
+        <ul class="stats-list">
+            {% for stat, valor in pokemon.stats.items() %}
+                <li>
+                    <span class="stat-name">{{ stat | title }}:</span> 
+                    <span class="stat-value">{{ valor }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <a href="/" class="button back-button">Volver al inicio</a>
+    </div>
+</body>
+</html>
