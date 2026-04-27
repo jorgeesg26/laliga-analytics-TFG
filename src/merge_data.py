@@ -4,7 +4,9 @@ files = [
     "data/2020-2021.csv",
     "data/2021-2022.csv",
     "data/2022-2023.csv",
-    "data/2023-2024.csv"
+    "data/2023-2024.csv",
+    "data/2024-2025.csv",
+    "data/2025-2026.csv"
 ]
 
 dfs = []
