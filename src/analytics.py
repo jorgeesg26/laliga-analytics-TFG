@@ -2,7 +2,15 @@ import pandas as pd
 
 
 def cargar_datos(ruta="data/laliga_clean.csv"):
-    return pd.read_csv(ruta)
+    try:
+        df = pd.read_csv(ruta)
+        return df
+    except FileNotFoundError as error:
+        raise FileNotFoundError(f"No se ha encontrado el archivo: {ruta}") from error
+    except pd.errors.EmptyDataError as error:
+        raise ValueError("El archivo CSV está vacío.") from error
+    except Exception as error:
+        raise RuntimeError(f"Error al cargar los datos: {error}") from error
 
 
 def calcular_puntos(df):
