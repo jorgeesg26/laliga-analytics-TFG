@@ -56,3 +56,29 @@ def validar_columnas(df, columnas_obligatorias=None):
         )
 
     return True
+    
+    def limpiar_dataset(df):
+    df = df.copy()
+
+    validar_columnas(df)
+
+    df["fecha"] = pd.to_datetime(df["fecha"], dayfirst=True, errors="coerce")
+
+    columnas_numericas = [
+        "goles_local",
+        "goles_visitante",
+        "tiros_local",
+        "tiros_visitante",
+        "tiros_puerta_local",
+        "tiros_puerta_visitante",
+        "amarillas_local",
+        "amarillas_visitante",
+    ]
+
+    for columna in columnas_numericas:
+        df[columna] = pd.to_numeric(df[columna], errors="coerce")
+
+    df = df.dropna(subset=["fecha", "local", "visitante", "temporada"])
+    df[columnas_numericas] = df[columnas_numericas].fillna(0).astype(int)
+
+    return df
