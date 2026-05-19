@@ -27,3 +27,46 @@ class DataManager:
 
     def get_data(self):
         return self._df
+
+    class LaLigaDataManager(DataManager):
+    REQUIRED_COLUMNS = [
+        "fecha",
+        "local",
+        "visitante",
+        "goles_local",
+        "goles_visitante",
+        "tiros_local",
+        "tiros_visitante",
+        "tiros_puerta_local",
+        "tiros_puerta_visitante",
+        "amarillas_local",
+        "amarillas_visitante",
+        "temporada",
+    ]
+
+    def validate_columns(self):
+        if self._df is None:
+            raise ValueError("No hay datos cargados.")
+
+        missing_columns = [
+            column for column in self.REQUIRED_COLUMNS if column not in self._df.columns
+        ]
+
+        if missing_columns:
+            raise ValueError(f"Faltan columnas obligatorias: {missing_columns}")
+
+        return True
+
+    def clean_data(self):
+        if self._df is None:
+            raise ValueError("No hay datos cargados.")
+
+        self.validate_columns()
+
+        self._df["fecha"] = pd.to_datetime(
+            self._df["fecha"], dayfirst=True, errors="coerce"
+        )
+
+        self._df = self._df.dropna(subset=["fecha", "local", "visitante"])
+
+        return self._df
