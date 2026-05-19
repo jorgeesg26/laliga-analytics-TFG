@@ -45,9 +45,17 @@ st.write(
     "desde la temporada 2020 hasta la actualidad."
 )
 
-df = cargar_datos_cache()
+try:
+    df = cargar_datos_cache()
+except Exception as error:
+    st.error(f"Error al cargar los datos: {error}")
+    st.stop()
 
-modelo, accuracy = entrenar_modelo_cache(df)
+try:
+    modelo, accuracy = entrenar_modelo_cache(df)
+except Exception as error:
+    st.error(f"Error al entrenar el modelo de IA: {error}")
+    st.stop()
 
 temporadas = sorted(df["temporada"].unique())
 temporada = st.selectbox("Selecciona una temporada", temporadas)
