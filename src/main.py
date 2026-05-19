@@ -1,15 +1,16 @@
-from src.analytics import cargar_datos, limpiar_dataset
-from src.analisis import calcular_clasificacion
+from models import LaLigaAnalyzer, LaLigaDataManager
 
 
 def main():
-    df = cargar_datos("data/laliga_clean.csv")
-    df = limpiar_dataset(df)
+    data_manager = LaLigaDataManager("data/laliga_clean.csv")
+    df = data_manager.load_data()
+    df = data_manager.clean_data()
 
-    tabla = calcular_clasificacion(df)
+    analyzer = LaLigaAnalyzer(df)
+    classification = analyzer.get_classification()
 
     print("Top 10 equipos por puntos:")
-    print(tabla.head(10))
+    print(classification.head(10))
 
 
 if __name__ == "__main__":

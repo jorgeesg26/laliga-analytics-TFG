@@ -2,9 +2,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
+
 
 class DataManager:
     def __init__(self, data_path):
@@ -31,7 +29,8 @@ class DataManager:
     def get_data(self):
         return self._df
 
-    class LaLigaDataManager(DataManager):
+
+class LaLigaDataManager(DataManager):
     REQUIRED_COLUMNS = [
         "fecha",
         "local",
@@ -52,7 +51,9 @@ class DataManager:
             raise ValueError("No hay datos cargados.")
 
         missing_columns = [
-            column for column in self.REQUIRED_COLUMNS if column not in self._df.columns
+            column
+            for column in self.REQUIRED_COLUMNS
+            if column not in self._df.columns
         ]
 
         if missing_columns:
@@ -67,13 +68,35 @@ class DataManager:
         self.validate_columns()
 
         self._df["fecha"] = pd.to_datetime(
-            self._df["fecha"], dayfirst=True, errors="coerce"
+            self._df["fecha"],
+            dayfirst=True,
+            errors="coerce",
         )
 
-        self._df = self._df.dropna(subset=["fecha", "local", "visitante"])
+        numeric_columns = [
+            "goles_local",
+            "goles_visitante",
+            "tiros_local",
+            "tiros_visitante",
+            "tiros_puerta_local",
+            "tiros_puerta_visitante",
+            "amarillas_local",
+            "amarillas_visitante",
+        ]
+
+        for column in numeric_columns:
+            self._df[column] = pd.to_numeric(self._df[column], errors="coerce")
+
+        self._df = self._df.dropna(
+            subset=["fecha", "local", "visitante", "temporada"]
+        )
+
+        self._df[numeric_columns] = self._df[numeric_columns].fillna(0).astype(int)
 
         return self._df
-        class BaseAnalyzer:
+
+
+class BaseAnalyzer:
     def __init__(self, df):
         self._df = df.copy()
 
@@ -85,22 +108,22 @@ class LaLigaAnalyzer(BaseAnalyzer):
 
         self._df.loc[
             self._df["goles_local"] > self._df["goles_visitante"],
-            "puntos_local"
+            "puntos_local",
         ] = 3
 
         self._df.loc[
             self._df["goles_local"] < self._df["goles_visitante"],
-            "puntos_visitante"
+            "puntos_visitante",
         ] = 3
 
         self._df.loc[
             self._df["goles_local"] == self._df["goles_visitante"],
-            "puntos_local"
+            "puntos_local",
         ] = 1
 
         self._df.loc[
             self._df["goles_local"] == self._df["goles_visitante"],
-            "puntos_visitante"
+            "puntos_visitante",
         ] = 1
 
         return self._df
@@ -111,21 +134,21 @@ class LaLigaAnalyzer(BaseAnalyzer):
         local = df.groupby("local").agg({
             "goles_local": "sum",
             "goles_visitante": "sum",
-            "puntos_local": "sum"
+            "puntos_local": "sum",
         }).rename(columns={
             "goles_local": "goles_favor",
             "goles_visitante": "goles_contra",
-            "puntos_local": "puntos"
+            "puntos_local": "puntos",
         })
 
         visitante = df.groupby("visitante").agg({
             "goles_visitante": "sum",
             "goles_local": "sum",
-            "puntos_visitante": "sum"
+            "puntos_visitante": "sum",
         }).rename(columns={
             "goles_visitante": "goles_favor",
             "goles_local": "goles_contra",
-            "puntos_visitante": "puntos"
+            "puntos_visitante": "puntos",
         })
 
         tabla = local.add(visitante, fill_value=0)
@@ -133,7 +156,7 @@ class LaLigaAnalyzer(BaseAnalyzer):
 
         tabla = tabla.sort_values(
             by=["puntos", "diferencia_goles", "goles_favor"],
-            ascending=False
+            ascending=False,
         )
 
         return tabla
@@ -145,11 +168,13 @@ class LaLigaAnalyzer(BaseAnalyzer):
     def get_top_defense(self, n=10):
         tabla = self.get_classification()
         return tabla.sort_values(by="goles_contra", ascending=True).head(n)
-        class MatchPredictor:
+
+
+class MatchPredictor:
     def __init__(self):
         self._model = RandomForestClassifier(
             n_estimators=100,
-            random_state=42
+            random_state=42,
         )
         self._accuracy = None
 
@@ -180,7 +205,7 @@ class LaLigaAnalyzer(BaseAnalyzer):
             x,
             y,
             test_size=0.2,
-            random_state=42
+            random_state=42,
         )
 
         self._model.fit(x_train, y_train)
