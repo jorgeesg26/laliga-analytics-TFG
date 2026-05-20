@@ -131,7 +131,13 @@ if equipo1 != equipo2:
         st.metric("Diferencia", int(datos2["diferencia_goles"]))
 
     st.subheader("📊 Comparación visual")
-    st.pyplot(grafico_comparacion_equipos(equipo1, equipo2, datos1, datos2))
+    col_comp1, col_comp2, col_comp3 = st.columns([1, 2, 1])
+
+    with col_comp2:
+        st.pyplot(
+            grafico_comparacion_equipos(equipo1, equipo2, datos1, datos2),
+            use_container_width=False
+        )
 else:
     st.warning("Selecciona dos equipos diferentes para compararlos.")
 
