@@ -2,17 +2,46 @@
 
 LaLiga Analytics es una aplicación web desarrollada en Python para analizar datos históricos de LaLiga desde la temporada 2020-2021 hasta la actualidad.
 
-El proyecto permite consultar clasificaciones por temporada, visualizar gráficos de rendimiento, comparar equipos y utilizar un modelo de Inteligencia Artificial para realizar una predicción básica del resultado de un partido.
+El proyecto transforma varios archivos CSV con estadísticas de partidos en una herramienta visual e interactiva. Desde el dashboard se pueden consultar clasificaciones por temporada, gráficos de rendimiento, comparaciones entre equipos y una predicción básica mediante Inteligencia Artificial.
 
-## Objetivo del proyecto
+El trabajo combina tres partes principales:
 
-El objetivo principal es transformar varios archivos CSV con datos de partidos en una herramienta visual e interactiva.
+- gestión y limpieza de datos;
+- análisis y visualización de información deportiva;
+- programación orientada a objetos, testing y modelo predictivo.
 
-A partir de los datos limpios, la aplicación calcula métricas deportivas como puntos, goles a favor, goles en contra, diferencia de goles y rankings ofensivos y defensivos.
+## 1. Análisis del problema
 
-Además, el proyecto incorpora una parte de Inteligencia Artificial mediante un modelo Random Forest Classifier, que predice si un partido termina con victoria local, empate o victoria visitante a partir de estadísticas introducidas por el usuario.
+El problema que se intenta resolver es que los datos deportivos en formato CSV no son cómodos de consultar directamente. Aunque contienen información útil, como goles, tiros, tiros a puerta o tarjetas, trabajar con varios archivos separados por temporada dificulta comparar equipos y obtener conclusiones rápidas.
 
-## Tecnologías utilizadas
+Por ese motivo, el objetivo del proyecto ha sido crear una aplicación capaz de:
+
+- cargar datos de varias temporadas;
+- limpiar y unificar los CSV originales;
+- calcular métricas deportivas;
+- mostrar tablas y gráficos de forma visual;
+- comparar equipos;
+- realizar una predicción básica con Machine Learning.
+
+La aplicación está dirigida a usuarios interesados en el análisis deportivo, estudiantes de datos, aficionados al fútbol o personas que quieran consultar información de LaLiga de forma sencilla.
+
+## 2. Objetivo del proyecto
+
+El objetivo principal es desarrollar un sistema de gestión y análisis de datos deportivos aplicando Python, Pandas, Streamlit, programación orientada a objetos y pruebas automáticas.
+
+A partir del dataset limpio, la aplicación calcula métricas como:
+
+- puntos;
+- goles a favor;
+- goles en contra;
+- diferencia de goles;
+- rankings ofensivos;
+- rankings defensivos;
+- comparación entre equipos.
+
+Además, el proyecto incorpora un modelo Random Forest Classifier, que predice si un partido termina con victoria local, empate o victoria visitante a partir de estadísticas introducidas por el usuario.
+
+## 3. Tecnologías utilizadas
 
 - Python
 - Pandas
@@ -23,7 +52,7 @@ Además, el proyecto incorpora una parte de Inteligencia Artificial mediante un 
 - Pytest
 - GitHub
 
-## Estructura del proyecto
+## 4. Estructura del proyecto
 
 ```text
 laliga-analytics-TFG/
@@ -68,85 +97,136 @@ laliga-analytics-TFG/
 └── README.md
 ```
 
-## Instalación
+## 5. Arquitectura de clases
 
-Primero se recomienda crear un entorno virtual:
+El proyecto incorpora programación orientada a objetos en el archivo:
 
-```bash
-python -m venv venv
+```text
+src/models.py
 ```
 
-Activar el entorno virtual en Windows:
+Las clases principales son:
 
-```bash
-venv\Scripts\activate
-```
+- `DataManager`
+- `LaLigaDataManager`
+- `BaseAnalyzer`
+- `LaLigaAnalyzer`
+- `MatchPredictor`
 
-Instalar las dependencias necesarias:
+### Explicación de la jerarquía
 
-```bash
-pip install -r requirements.txt
-```
+La clase `DataManager` funciona como clase base para gestionar la carga y guardado de datos. A partir de ella se crea `LaLigaDataManager`, una clase hija especializada en validar y limpiar datasets de LaLiga.
 
-## Ejecutar el dashboard
+También se utiliza una clase base llamada `BaseAnalyzer`, que almacena el DataFrame de trabajo. De ella hereda `LaLigaAnalyzer`, que contiene métodos para calcular puntos, clasificaciones y rankings.
 
-Para lanzar la aplicación web con Streamlit:
+Por último, la clase `MatchPredictor` encapsula el modelo de Inteligencia Artificial. Esta clase se encarga de preparar los datos, entrenar el modelo Random Forest, calcular la precisión y realizar predicciones.
 
-```bash
-streamlit run app/dashboard.py
-```
+### Encapsulamiento
 
-Al ejecutar este comando, se abrirá una dirección local en el navegador desde la que se puede utilizar el dashboard de LaLiga Analytics.
+El proyecto utiliza atributos privados para proteger la información interna de las clases:
 
-## Ejecutar análisis por consola
+- `_data_path`
+- `_df`
+- `_model`
+- `_accuracy`
 
-También se puede ejecutar un análisis básico desde consola:
+Esto permite organizar mejor el código y separar responsabilidades entre carga de datos, análisis y predicción.
 
-```bash
-python src/main.py
-```
+## 6. Diagrama UML
 
-Este comando carga el dataset limpio, calcula la clasificación general y muestra el Top 10 de equipos por puntos.
+El siguiente diagrama muestra la estructura orientada a objetos del proyecto, incluyendo herencia y clases principales.
 
-## Ejecutar pruebas
+![Diagrama UML de clases](docs/Diagrama_UML.png)
 
-Para ejecutar las pruebas automáticas con Pytest:
-
-```bash
-pytest
-```
-
-Las pruebas comprueban aspectos como:
-
-- existencia del dataset limpio;
-- columnas principales del dataset;
-- cálculo correcto de puntos;
-- generación de la clasificación;
-- entrenamiento y predicción del modelo de Inteligencia Artificial.
-
-## Dataset utilizado
+## 7. Gestión de datos
 
 Los datos originales proceden de Football-Data y corresponden a diferentes temporadas de LaLiga.
 
-A partir de los CSV originales se genera un archivo limpio llamado:
+Cada temporada se encuentra en un archivo CSV independiente. Para trabajar con todos los datos de forma conjunta, se creó un proceso de limpieza y unión de datasets mediante el archivo:
+
+```text
+src/merge_data.py
+```
+
+A partir de los CSV originales se genera el archivo limpio:
 
 ```text
 data/laliga_clean.csv
 ```
 
-Este archivo contiene las columnas necesarias para el análisis y para el modelo de IA:
+Este archivo es la base principal del proyecto y se utiliza tanto en el dashboard como en el modelo de Inteligencia Artificial.
 
-- fecha;
-- equipo local;
-- equipo visitante;
-- goles del equipo local;
-- goles del equipo visitante;
-- tiros;
-- tiros a puerta;
-- tarjetas amarillas;
-- temporada.
+### Columnas utilizadas
 
-## Modelo de Inteligencia Artificial
+El dataset limpio contiene columnas como:
+
+- `fecha`
+- `local`
+- `visitante`
+- `goles_local`
+- `goles_visitante`
+- `tiros_local`
+- `tiros_visitante`
+- `tiros_puerta_local`
+- `tiros_puerta_visitante`
+- `amarillas_local`
+- `amarillas_visitante`
+- `temporada`
+
+### Limpieza realizada
+
+Durante la preparación de datos se realizaron las siguientes tareas:
+
+- selección de columnas relevantes;
+- eliminación de columnas no necesarias;
+- renombrado de columnas para mejorar la legibilidad;
+- unión de varias temporadas en un único dataset;
+- control de columnas obligatorias;
+- conversión de fechas;
+- conversión de valores numéricos;
+- tratamiento de valores nulos.
+
+## 8. Análisis de datos
+
+El análisis se centra en obtener información deportiva útil a partir del dataset limpio.
+
+Las métricas principales calculadas son:
+
+- puntos por equipo;
+- goles a favor;
+- goles en contra;
+- diferencia de goles;
+- total de partidos;
+- total de goles;
+- rankings ofensivos;
+- rankings defensivos.
+
+Para calcular la clasificación se tienen en cuenta los partidos jugados como local y como visitante. Esto es necesario porque en el dataset los equipos aparecen en columnas diferentes según jueguen en casa o fuera.
+
+El sistema de puntuación aplicado es:
+
+- victoria: 3 puntos;
+- empate: 1 punto;
+- derrota: 0 puntos.
+
+## 9. Visualización de datos
+
+La visualización se realiza mediante Streamlit y Matplotlib.
+
+El dashboard permite:
+
+- seleccionar una temporada;
+- consultar la clasificación;
+- visualizar gráficos de puntos;
+- visualizar gráficos de goles a favor;
+- visualizar gráficos defensivos;
+- comparar un equipo individual;
+- comparar dos equipos;
+- probar una predicción con IA.
+
+Los gráficos ayudan a interpretar los resultados de forma más rápida que una tabla tradicional.
+
+## 10. Modelo de Inteligencia Artificial
 
 El proyecto utiliza un modelo Random Forest Classifier de Scikit-learn.
 
@@ -167,25 +247,116 @@ La salida del modelo puede ser:
 
 En las pruebas realizadas, el modelo obtuvo una precisión aproximada del 50,9%.
 
-## Programación orientada a objetos
+Este resultado debe interpretarse como una primera aproximación práctica al uso de Machine Learning en fútbol. No se trata de una predicción profesional, ya que el fútbol depende de muchos factores que no aparecen en el dataset, como lesiones, alineaciones, estado de forma o contexto del partido.
 
-El proyecto incorpora un módulo de clases en:
+## 11. Robustez y control de errores
+
+El proyecto incorpora control de errores en partes importantes del sistema, especialmente en la carga de datos y en el dashboard.
+
+Se contemplan errores como:
+
+- archivo CSV no encontrado;
+- archivo vacío;
+- columnas obligatorias ausentes;
+- errores al entrenar el modelo;
+- errores al cargar datos en Streamlit.
+
+En caso de error, el dashboard muestra un mensaje mediante `st.error()` y detiene la ejecución con `st.stop()` para evitar fallos poco claros para el usuario.
+
+## 12. Testing
+
+El proyecto incluye pruebas automáticas con Pytest en la carpeta:
 
 ```text
-src/models.py
+tests/
 ```
 
-Las clases principales son:
+Las pruebas comprueban:
 
-- DataManager;
-- LaLigaDataManager;
-- BaseAnalyzer;
-- LaLigaAnalyzer;
-- MatchPredictor.
+- que existe el dataset limpio;
+- que el dataset contiene las columnas principales;
+- que el cálculo de puntos funciona correctamente;
+- que la clasificación genera las columnas esperadas;
+- que el modelo de IA entrena y devuelve una predicción válida.
 
-Estas clases permiten organizar la carga de datos, la limpieza del dataset, el análisis deportivo y el modelo predictivo.
+Para ejecutar las pruebas:
 
-## Repositorio
+```bash
+pytest
+```
+
+## 13. Instalación
+
+Primero se recomienda crear un entorno virtual:
+
+```bash
+python -m venv venv
+```
+
+Activar el entorno virtual en Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+Instalar las dependencias necesarias:
+
+```bash
+pip install -r requirements.txt
+```
+
+## 14. Ejecutar el dashboard
+
+Para lanzar la aplicación web con Streamlit:
+
+```bash
+streamlit run app/dashboard.py
+```
+
+Al ejecutar este comando, se abrirá una dirección local en el navegador desde la que se puede utilizar el dashboard de LaLiga Analytics.
+
+## 15. Ejecutar análisis por consola
+
+También se puede ejecutar un análisis básico desde consola:
+
+```bash
+python src/main.py
+```
+
+Este comando carga el dataset limpio, calcula la clasificación general y muestra el Top 10 de equipos por puntos.
+
+## 16. Ejecutar pruebas
+
+Para ejecutar las pruebas automáticas:
+
+```bash
+pytest
+```
+
+## 17. Conclusiones del análisis
+
+Las conclusiones principales del análisis se encuentran en:
+
+```text
+docs/conclusiones_analisis.md
+```
+
+De forma resumida, el análisis permite observar qué equipos han tenido mayor regularidad en puntos, cuáles han destacado más en ataque y cuáles han sido más sólidos defensivamente.
+
+También se observa que el modelo de IA puede detectar ciertos patrones, aunque su precisión está limitada por las variables disponibles.
+
+## 18. Posibles mejoras futuras
+
+Algunas mejoras futuras serían:
+
+- añadir más temporadas históricas;
+- incorporar otras competiciones;
+- incluir datos de jugadores;
+- añadir variables previas al partido;
+- mejorar el modelo predictivo;
+- desplegar el dashboard en la nube.
+
+## 19. Repositorio
 
 El código fuente del proyecto está disponible en GitHub:
 
@@ -193,6 +364,6 @@ El código fuente del proyecto está disponible en GitHub:
 https://github.com/jorgeesg26/laliga-analytics-TFG.git
 ```
 
-## Autor
+## 20. Autor
 
 Jorge Salguero Abad
