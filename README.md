@@ -67,6 +67,11 @@ laliga-analytics-TFG/
 ├── requirements.txt
 └── README.md
 ```
+## Diagrama UML
+
+El proyecto incluye una estructura orientada a objetos para organizar la carga de datos, el análisis deportivo y el modelo predictivo.
+
+![Diagrama UML de clases](docs/Diagrama_UML.png)
 
 ## Instalación
 
